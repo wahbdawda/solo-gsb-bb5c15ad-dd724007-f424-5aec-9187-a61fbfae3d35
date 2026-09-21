@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>考古地层关系推演台</title>
+  <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark">⛰</span>
+      <div>
+        <h1>考古地层关系推演台</h1>
+        <p class="subtitle">录入地层单元及时代关系 · 自动校验矛盾环 · 推演可行层位区间</p>
+      </div>
+    </div>
+    <div class="top-actions">
+      <button id="btn-sample" class="btn">载入示例</button>
+      <button id="btn-reset" class="btn btn-ghost">清空全部</button>
+      <button id="btn-export" class="btn btn-primary">导出 JSON</button>
+    </div>
+  </header>
+
+  <div id="flash" class="flash hidden"></div>
+
+  <main class="layout">
+    <!-- 左栏：单元 -->
+    <section class="panel" id="panel-units">
+      <h2>地层单元</h2>
+
+      <form id="form-unit" class="form">
+        <label>编号
+          <input name="id" required maxlength="40" placeholder="如 U8、H2" />
+        </label>
+        <label>名称
+          <input name="name" required maxlength="80" placeholder="如 灰坑 H2" />
+        </label>
+        <label>备注
+          <input name="note" maxlength="500" placeholder="可选" />
+        </label>
+        <button class="btn btn-primary btn-block" type="submit">添加单元</button>
+      </form>
+
+      <ul id="unit-list" class="unit-list"></ul>
+    </section>
+
+    <!-- 中栏：图 + 冲突 -->
+    <section class="panel panel-graph" id="panel-graph">
+      <div class="graph-head">
+        <h2>关系图</h2>
+        <div id="legend" class="legend">
+          <span class="lg lg-time">━ 早于</span>
+          <span class="lg lg-intersect">┄ 相交</span>
+          <span class="lg lg-conflict">━ 矛盾关系</span>
+          <span class="lg lg-affected-dot">● 受影响节点</span>
+        </div>
+      </div>
+      <div id="conflict-box" class="conflict-box hidden"></div>
+      <div id="graph-wrap" class="graph-wrap">
+        <div id="graph-empty" class="empty-hint hidden">暂无数据，请先在左侧添加地层单元，或点击右上角“载入示例”。</div>
+        <svg id="graph" xmlns="http://www.w3.org/2000/svg"></svg>
+      </div>
+      <div id="interval-summary" class="interval-summary"></div>
+    </section>
+
+    <!-- 右栏：关系 -->
+    <section class="panel" id="panel-relations">
+      <h2>地层关系</h2>
+
+      <form id="form-relation" class="form">
+        <label>单元 A
+          <select name="source_id" required></select>
+        </label>
+        <label>关系
+          <select name="kind" required>
+            <option value="earlier_than">早于</option>
+            <option value="later_than">晚于</option>
+            <option value="intersects">相交（同期）</option>
+          </select>
+        </label>
+        <label>单元 B
+          <select name="target_id" required></select>
+        </label>
+        <label>备注
+          <input name="note" maxlength="500" placeholder="可选" />
+        </label>
+        <button class="btn btn-primary btn-block" type="submit">添加关系</button>
+      </form>
+
+      <ul id="relation-list" class="relation-list"></ul>
+    </section>
+  </main>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
