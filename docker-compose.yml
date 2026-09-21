@@ -1,0 +1,12 @@
+services:
+  strata:
+    build: .
+    container_name: archaeo-strata
+    ports:
+      - "8000:8000"
+    volumes:
+      - strata-data:/data
+    restart: unless-stopped
+
+volumes:
+  strata-data:

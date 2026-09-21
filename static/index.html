@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>考古地层关系推演台</title>
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark">⛏</span>
+      <div>
+        <h1>考古地层关系推演台</h1>
+        <p class="subtitle">录入地层单元及时序关系 · 矛盾环校验 · 层位区间推演 · 拓扑关系图</p>
+      </div>
+    </div>
+    <div class="topbar-actions">
+      <span id="statusBadge" class="badge">—</span>
+      <button id="btnDemo" class="btn btn-ghost" title="载入示例发掘区数据">载入示例</button>
+      <button id="btnExport" class="btn btn-ghost" title="导出全部数据与推演结果为 JSON">导出 JSON</button>
+      <button id="btnClear" class="btn btn-danger-ghost" title="清空全部单元与关系">清空</button>
+    </div>
+  </header>
+
+  <main class="layout">
+    <!-- 左栏：录入与关系清单 -->
+    <section class="col col-left">
+      <div class="card">
+        <h2>① 录入地层单元</h2>
+        <form id="unitForm" class="form">
+          <div class="row">
+            <label>编号
+              <input name="code" required placeholder="如 L3 / H9" maxlength="40" />
+            </label>
+          </div>
+          <div class="row">
+            <label>名称（可选）
+              <input name="name" placeholder="如 第3层" />
+            </label>
+          </div>
+          <div class="row">
+            <label>类型
+              <select name="kind">
+                <option value="layer">地层</option>
+                <option value="pit">灰坑/窖穴</option>
+                <option value="wall">墙基</option>
+                <option value="ditch">沟壕</option>
+                <option value="tomb">墓葬</option>
+                <option value="ash">灶/灰烬</option>
+                <option value="other">其他遗迹</option>
+              </select>
+            </label>
+          </div>
+          <div class="row">
+            <label>备注（可选）
+              <input name="note" placeholder="土质土色、出土物等" />
+            </label>
+          </div>
+          <button type="submit" class="btn btn-primary btn-block">添加单元</button>
+        </form>
+      </div>
+
+      <div class="card">
+        <h2>② 建立关系</h2>
+        <form id="relForm" class="form">
+          <div class="row rel-row">
+            <select name="source_id" required></select>
+            <select name="rel_type">
+              <option value="earlier">早于</option>
+              <option value="later">晚于</option>
+              <option value="intersects">相交</option>
+            </select>
+            <select name="target_id" required></select>
+          </div>
+          <div class="row">
+            <label>备注（可选）
+              <input name="note" placeholder="判定依据，如打破/叠压关系" />
+            </label>
+          </div>
+          <button type="submit" class="btn btn-primary btn-block">添加关系</button>
+          <p class="hint">提示：点击单元列表中的 <b>源 / 目</b> 可快速填充下拉框。</p>
+        </form>
+      </div>
+
+      <div class="card">
+        <h2>单元列表 <span id="unitCount" class="count-pill"></span></h2>
+        <ul id="unitList" class="item-list"></ul>
+      </div>
+
+      <div class="card">
+        <h2>关系清单 <span id="relCount" class="count-pill"></span></h2>
+        <ul id="relList" class="item-list"></ul>
+      </div>
+    </section>
+
+    <!-- 中栏：关系图 -->
+    <section class="col col-center">
+      <div class="card graph-card">
+        <div class="card-head">
+          <h2>③ 地层关系图</h2>
+          <div class="legend">
+            <span class="lg"><i class="lg-line lg-arrow"></i>早于（叠压/时间向下→上）</span>
+            <span class="lg"><i class="lg-line lg-intersect"></i>相交（共存同层）</span>
+            <span class="lg"><i class="lg-dot lg-node-new"></i>受影响</span>
+            <span class="lg"><i class="lg-dot lg-node-conflict"></i>矛盾节点</span>
+          </div>
+        </div>
+        <div id="graphWrap" class="graph-wrap">
+          <svg id="graph" xmlns="http://www.w3.org/2000/svg"></svg>
+          <div id="graphEmpty" class="empty-hint">
+            尚无单元。点击「载入示例」或在左侧录入地层单元开始推演。
+          </div>
+        </div>
+        <div id="affectedBanner" class="affected-banner hidden"></div>
+      </div>
+    </section>
+
+    <!-- 右栏：推演结果 -->
+    <section class="col col-right">
+      <div class="card">
+        <h2>④ 层位区间推演</h2>
+        <div id="stats" class="stats"></div>
+        <div id="topoBox" class="topo-box"></div>
+        <div id="intervalTableWrap">
+          <table class="data-table">
+            <thead>
+              <tr><th>单元</th><th>共存组</th><th>最早层位</th><th>最晚层位</th><th>判定</th></tr>
+            </thead>
+            <tbody id="intervalBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>⑤ 冲突详情</h2>
+        <div id="conflictBox"></div>
+      </div>
+    </section>
+  </main>
+
+  <div id="toast" class="toast hidden"></div>
+  <script src="/static/app.js"></script>
+</body>
+</html>
